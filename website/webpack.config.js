@@ -1,7 +1,7 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const InlineManifestWebpackPlugin = require('inline-manifest-webpack-plugin');
+// const InlineManifestWebpackPlugin = require('inline-manifest-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const TerserPlugin = require('terser-webpack-plugin');
+// const TerserPlugin = require('terser-webpack-plugin');
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
@@ -13,24 +13,25 @@ const plugins = [
   new webpack.DefinePlugin({
     'process.env.API_HOST': JSON.stringify(process.env.API_HOST || ''),
   }),
-  new webpack.IgnorePlugin(/\.md$/),
-  new webpack.IgnorePlugin(/node\/nodeLoader.js/),
+  new webpack.IgnorePlugin({ resourceRegExp: /\.md$/ }),
+  new webpack.IgnorePlugin({ resourceRegExp: /node\/nodeLoader.js/ }),
   // Usually babel-eslint tries to patch eslint, but we are using "parseNoPatch",
   // so that code patch will never be executed.
-  new webpack.IgnorePlugin(/^eslint$/, /babel-eslint/),
+  new webpack.IgnorePlugin({ resourceRegExp: /^eslint$/, contextRegExp: /babel-eslint/ }),
 
   // Prettier //
 
   // We don't use these parsers with prettier, so we don't need to include them
-  new webpack.IgnorePlugin(/parser-flow/, /\/prettier/),
-  new webpack.IgnorePlugin(/parser-glimmer/, /\/prettier/),
-  new webpack.IgnorePlugin(/parser-graphql/, /\/prettier/),
-  new webpack.IgnorePlugin(/parser-markdown/, /\/prettier/),
-  new webpack.IgnorePlugin(/parser-parse5/, /\/prettier/),
-  new webpack.IgnorePlugin(/parser-postcss/, /\/prettier/),
-  new webpack.IgnorePlugin(/parser-typescript/, /\/prettier/),
-  new webpack.IgnorePlugin(/parser-vue/, /\/prettier/),
-  new webpack.IgnorePlugin(/parser-yaml/, /\/prettier/),
+  new webpack.IgnorePlugin({ resourceRegExp: /parser-flow/, contextRegExp: /\/prettier/ }),
+  new webpack.IgnorePlugin({ resourceRegExp: /parser-glimmer/, contextRegExp: /\/prettier/ }),
+  new webpack.IgnorePlugin({ resourceRegExp: /parser-graphql/, contextRegExp: /\/prettier/ }),
+
+  new webpack.IgnorePlugin({ resourceRegExp: /parser-markdown/, contextRegExp: /\/prettier/ }),
+  new webpack.IgnorePlugin({ resourceRegExp: /parser-parse5/, contextRegExp: /\/prettier/ }),
+  new webpack.IgnorePlugin({ resourceRegExp: /parser-postcss/, contextRegExp: /\/prettier/ }),
+  new webpack.IgnorePlugin({ resourceRegExp: /parser-typescript/, contextRegExp: /\/prettier/ }),
+  new webpack.IgnorePlugin({ resourceRegExp: /parser-vue/, contextRegExp: /\/prettier/ }),
+  new webpack.IgnorePlugin({ resourceRegExp: /parser-yaml/, contextRegExp: /\/prettier/ }),
 
   // go //
   new webpack.NormalModuleReplacementPlugin(
@@ -65,7 +66,7 @@ const plugins = [
 
   new MiniCssExtractPlugin({
     filename: DEV ? '[name].css' : `[name]-[contenthash]-${CACHE_BREAKER}.css`,
-    allChunks: true,
+    // allChunks: true,
   }),
 
   new HtmlWebpackPlugin({
@@ -77,7 +78,7 @@ const plugins = [
   }),
 
   // Inline runtime and manifest into the HTML. It's small and changes after every build.
-  new InlineManifestWebpackPlugin(),
+  // new InlineManifestWebpackPlugin(),
   new webpack.ProgressPlugin({
     modules: false,
     activeModules: false,
@@ -102,13 +103,13 @@ module.exports = Object.assign({
         },
       },
     },
-    minimizer: [
-      new TerserPlugin({
-        terserOptions: {
-          keep_fnames: true,
-        },
-      }),
-    ],
+    // minimizer: [
+    //   new TerserPlugin({
+    //     terserOptions: {
+    //       keep_fnames: true,
+    //     },
+    //   }),
+    // ],
   },
 
   module: {
@@ -251,7 +252,7 @@ module.exports = Object.assign({
       },
       {
         test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        loader: 'url-loader?limit=10000&mimetype=application/font-woff',
+        loader: 'url-loader',
       },
       {
         test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
@@ -272,13 +273,13 @@ module.exports = Object.assign({
     ],
   },
 
-  node: {
-    child_process: 'empty',
-    fs: 'empty',
-    module: 'empty',
-    net: 'empty',
-    readline: 'empty',
-  },
+  // node: {
+  //   child_process: false,//  'empty',
+  //   fs: false,
+  //   module: false,
+  //   net: false,
+  //   readline: false,
+  // },
 
   plugins: plugins,
 
